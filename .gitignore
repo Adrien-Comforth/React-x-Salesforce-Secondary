@@ -1,0 +1,46 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production/Build outputs
+/build
+/dist
+
+# Next.js build output (if using Next.js)
+/.next/
+
+# Production/Build artifacts (Vite, TypeScript, etc.)
+*.tsbuildinfo
+.eslintcache
+
+# Environment variables and local secrets (CRITICAL: Never commit these!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.secret
+
+# Debug and system logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor and IDE configurations (Optional but highly recommended)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Operating system files
+.DS_Store
+Thumbs.db

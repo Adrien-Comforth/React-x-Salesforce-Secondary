@@ -1,0 +1,17 @@
+{
+  "name": "react-x-salesforce",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix web && npm install --prefix salesforce",
+    "dev": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "test:lwc": "npm run test:unit --prefix salesforce",
+    "sf:login": "cd salesforce && sf org login web --alias product-dev --set-default",
+    "sf:set-url": "node salesforce/scripts/set-app-url.mjs",
+    "sf:deploy": "cd salesforce && sf project deploy start && sf org assign permset --name Product_Manager_App",
+    "sf:open": "cd salesforce && sf org open --path lightning/n/Product_Manager"
+  },
+  "devDependencies": {
+    "eslint-plugin-react-hooks": "^7.1.1"
+  }
+}

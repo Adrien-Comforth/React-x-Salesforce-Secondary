@@ -1,0 +1,16 @@
+<template>
+    <template lwc:if={src}>
+        <iframe
+            class="frame"
+            src={src}
+            title="Product Manager"
+            style={frameStyle}
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+        ></iframe>
+    </template>
+    <template lwc:else>
+        <div class="slds-box slds-theme_warning">
+            Product Manager: set a valid URL in the Product_App_URL custom label or the component's App URL property.
+        </div>
+    </template>
+</template>
