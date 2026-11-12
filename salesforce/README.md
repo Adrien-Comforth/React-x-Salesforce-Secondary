@@ -1,58 +1,76 @@
-# Salesforce DX Project
+# salesforce: Lightning host for the Product Manager app
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+An SFDX project (source API version 68.0) that embeds the React app ([../web](../web)) in Lightning Experience. It contains no Apex and no custom objects: the app works on the standard **Product2** object through the REST API.
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+For the full org setup, including the manual Setup steps that metadata can't cover, see [docs/SALESFORCE_SETUP.md](../docs/SALESFORCE_SETUP.md).
 
-## Prerequisites
+## What's in `force-app/main/default`
 
-Before you start, make sure you have:
+| Path | Type | Purpose |
+|---|---|---|
+| `lwc/productApp/` | Lightning Web Component | Shows the app in an iframe. Its label in App Builder is *Product Manager (React)*. |
+| `tabs/Product_Manager.tab-meta.xml` | Custom tab | Shows the component full-page |
+| `labels/CustomLabels.labels-meta.xml` | Custom label `Product_App_URL` | The app URL the component loads by default |
+| `cspTrustedSites/Product_App_{Vercel,Localhost}` | Trusted URLs (CSP Trusted Sites) | Allow `frame-src` to the app and to `https://localhost:5173` |
+| `corsWhitelistOrigins/Product_App_{Vercel,Localhost}` | CORS allowed origins | Allow REST API calls from those origins |
+| `permissionsets/Product_Manager_App.permissionset-meta.xml` | Permission set | Tab visibility, plus Product2 create, read, edit and delete. It doesn't include **API Enabled** yet. |
 
-- **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
-- **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
-- **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
+The label, the Vercel Trusted URL, and the Vercel CORS origin start with the placeholder `https://your-app.vercel.app`. Replace it before deploying (see below).
 
-## Project Structure
+## The `productApp` component
 
-Your DX project follows this structure:
+The component can be placed on App pages, Home pages, Product2 record pages, and tabs.
 
-- **`force-app/main/default/`** - Your metadata source files live in this default package directory. You can configure additional package directories in the `sfdx-project.json` file.
-- **`config/`** - Scratch org definitions and project settings
-- **`scripts/`** - Automation scripts for common tasks
-- **`sfdx-project.json`** - Project manifest that defines package directories, namespace, API version, and other project-level settings
+| Property | Where it's set | Meaning |
+|---|---|---|
+| `appUrl` | Lightning App Builder (App, Home and Record pages) | Overrides the `Product_App_URL` label. Use `https://localhost:5173` to test the local dev server. |
+| `height` | Lightning App Builder | Iframe height in pixels (default 720) |
+| `recordId` | Set automatically on record pages | Opens that product's detail view |
 
-See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm).
+The component builds the iframe URL as `<appUrl or label>?embedded=1`, and adds `#/products/<recordId>` on record pages. If the URL is invalid, it shows a warning box instead of the iframe.
 
-## Get Started
+The iframe's `sandbox` attribute allows scripts, same-origin access, forms, popups, and `allow-popups-to-escape-sandbox`. The login popup needs the last two.
 
-Ready to start developing? The [Get Started with Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_get_started_dx.htm) guide walks you through your first project, from creating a scratch org to creating a simple Apex class or LWC to deploying your code to a sandbox.
+## Commands
 
-## Common Salesforce CLI Commands
+Run these from the **repository root**:
 
-Here are common CLI commands that you'll use the most:
+```bash
+npm run sf:login                     # log in to the org as product-dev (sets it as the default)
+npm run sf:set-url -- <app-url>      # write the app URL into the label, Trusted URL and CORS origin
+npm run sf:deploy                    # deploy, then assign the Product_Manager_App permission set
+npm run sf:open                      # open the Product Manager tab
+npm run test:lwc                     # run the LWC Jest tests
+```
 
-- `sf org login web`: Authorize an org
-- `sf org open`: Open your org in a browser
-- `sf org create scratch`: Create a scratch org
-- `sf project deploy start`: Deploy metadata to your org
-- `sf project retrieve start`: Retrieve metadata from your org
-- `sf template generate <artifact>`: Scaffold new components, such as Apex classes and triggers, LWC components, Lightning apps, and more
-- `sf apex <command>`: Run Apex tests, run anonymous Apex blocks, and view logs
-- `sf data <command>`: Work with test data
-- `sf alias <command>`: Manage org aliases
-- `sf config <command>`: Configure CLI settings
+Run these from **this folder** after `npm install`:
 
-## Use Agentforce Vibes to Build Lightning Apps
+```bash
+npm run lint                         # ESLint for the LWC code
+npm run test:unit                    # same as test:lwc
+npm run test:unit:coverage
+npm run prettier                     # format the metadata and code
+```
 
-Transform your ideas into custom Lightning apps that extend CRM workflows directly in Lightning Experience. Through natural conversations with Agentforce Vibes, implement custom objects and fields, complex business logic, and dynamic UI components. See [Build a Lightning App Using Agentforce Vibes](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/lexapp-overview.html).
+### `scripts/set-app-url.mjs`
 
-## Additional Resources
+The script takes an `https` URL and keeps only its origin. It writes that origin into three files:
 
-- [Agentforce Vibes Developer Guide](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-overview.html)
-- [Salesforce CLI Installation Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
-- [Salesforce CLI Plugin Development Guide](https://developer.salesforce.com/docs/platform/salesforce-cli-plugin/guide/conceptual-overview.html)
-- [Salesforce VS Code Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
+- `CustomLabels.labels-meta.xml`
+- `Product_App_Vercel.cspTrustedSite-meta.xml`
+- `Product_App_Vercel.corsWhitelistOrigin-meta.xml`
 
+It also reminds you to add `<origin>/oauth/callback` to the OAuth app. The localhost entries stay as they are.
+
+## Tests
+
+`lwc/productApp/__tests__/productApp.test.js` has 3 Jest tests:
+- the default URL from the label
+- the record-page deep link with an `appUrl` override and a custom height
+- the warning shown for an invalid URL
+
+## Leftovers from the SFDX template
+
+- `scripts/apex/hello.apex` and `scripts/soql/account.soql` are template samples. This project doesn't use them.
+- `.husky/pre-commit` runs `lint-staged`. The git repository root is the folder above this one, so `husky` can't install the hook from here, and **the hook doesn't run**.
+- `config/project-scratch-def.json` is the default scratch org definition. The project targets a Developer Edition org instead.

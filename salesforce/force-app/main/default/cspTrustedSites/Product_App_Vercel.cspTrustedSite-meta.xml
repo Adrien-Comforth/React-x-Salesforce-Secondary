@@ -2,7 +2,7 @@
 <CspTrustedSite xmlns="http://soap.sforce.com/2006/04/metadata">
     <context>All</context>
     <description>React Product Manager (Vercel) - allowed in frame-src</description>
-    <endpointUrl>https://your-app.vercel.app</endpointUrl>
+    <endpointUrl>https://react-x-salesforce-test.vercel.app</endpointUrl>
     <isActive>true</isActive>
     <isApplicableToConnectSrc>false</isApplicableToConnectSrc>
     <isApplicableToFontSrc>false</isApplicableToFontSrc>
