@@ -200,7 +200,9 @@ New Developer Edition orgs often have no Product Family values. Without them, th
    VITE_SF_API_VERSION=v68.0
    ```
 
-   - **`VITE_SF_LOGIN_URL`:** use the My Domain URL, not `login.salesforce.com`. CORS settings belong to your org, and only your My Domain applies them.
+   - **`VITE_SF_LOGIN_URL`:** use the My Domain URL, which ends in `.my.salesforce.com` (the **Instance Url** from `sf org display`). Two look-alike URLs don't work:
+     - `login.salesforce.com` doesn't apply your org's CORS settings.
+     - The Lightning URL in your browser's address bar (`….lightning.force.com`) redirects the token request to My Domain without CORS headers, so the browser blocks it.
    - **`VITE_SF_API_VERSION`:** match the org's API version.
    - **`VITE_DATA_MODE`:** leave it unset. Setting it to `demo` forces demo mode even when a client ID is set.
 
@@ -244,7 +246,7 @@ The full test plan is in [HANDOFF.md](HANDOFF.md#6-test-plan).
 |---|---|
 | Iframe is blank or says "refused to connect" | The Trusted URL is missing or inactive (check **Setup**, then **Trusted URLs**), or `frame-ancestors` in `web/vercel.json` doesn't cover the Lightning host. The browser console shows which policy blocked it. |
 | The component shows a yellow "set a valid URL" box | The `Product_App_URL` label is invalid. Run `npm run sf:set-url -- <app-url>` and deploy again, or set the component's **App URL** property. |
-| Login fails with "Could not reach …" | **Enable CORS for OAuth endpoints** is off (B1), or the origin isn't in the CORS list. The origin must match exactly: scheme and host, no trailing slash. |
+| Login fails with "Could not reach …" | First look at the URL in the message. If it ends in `lightning.force.com`, `VITE_SF_LOGIN_URL` is the Lightning domain: set it to the My Domain URL (`….my.salesforce.com`) and redeploy (Part C). Otherwise, **Enable CORS for OAuth endpoints** is off (B1), or the origin isn't in the CORS list. The origin must match exactly: scheme and host, no trailing slash. |
 | "Network error calling Salesforce" after login | The app's origin isn't in the CORS allowed origins list. |
 | The popup shows `redirect_uri_mismatch` | The callback URL doesn't match exactly, or the app is still within its ~10-minute start-up delay. |
 | The popup shows `invalid_client_id` | Wrong Consumer Key, the start-up delay, or Vercel wasn't redeployed after the variables were set. |

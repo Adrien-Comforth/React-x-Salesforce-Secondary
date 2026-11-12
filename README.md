@@ -13,7 +13,7 @@ docs/         Setup guide and handoff notes
 | Document | Read it for |
 |---|---|
 | [docs/SALESFORCE_SETUP.md](docs/SALESFORCE_SETUP.md) | Step-by-step org setup: metadata deploy, CORS, External Client App or Connected App, embedding, troubleshooting |
-| [docs/HANDOFF.md](docs/HANDOFF.md) | Current project status, plan for going live, test plan, code map |
+| [docs/HANDOFF.md](docs/HANDOFF.md) | Handover: current state, work done, open items, demo preparation, test plan |
 | [web/README.md](web/README.md) | The React app: scripts, environment variables, code structure |
 | [salesforce/README.md](salesforce/README.md) | The Salesforce metadata and the `productApp` LWC |
 
